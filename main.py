@@ -1,6 +1,9 @@
 #This file was created by: Alex Chavez
 #my first source control edit
 # import necessary modules
+
+# Player Levels, Weapons, Gain currency from enemies
+
 import pygame as pg
 import sys
 from settings import *
@@ -56,13 +59,13 @@ class Game:
             
                 
 
-def run(self):
-    self.playing = True
-    while self.running:
-        self.dt = self.clock.tick(FPS) / 1000
-        self.events()
-        self.update()
-        self.draw()
+    def run(self):
+        self.playing = True
+        while self.playing:
+            self.dt = self.clock.tick(FPS) / 1000
+            self.events()
+            self.update()
+            self.draw()
     def quit(self):
         pg.quit
         sys.exit
@@ -93,25 +96,25 @@ def run(self):
 
     
       #input method
-def events(self):
-     for event in pg.event.get():
-        if event.type == pg.QUIT:
-          self.quit()
-        if event.type == pg.KEYDOWN:
-            if event.key == pg.K_LEFT:
-                     self.player.move(dx=-1)
-            if event.key == pg.K_RIGHT:
-                     self.player.move(dx=1)
-            if event.key == pg.K_UP:
-                     self.player.move(dy=-1)
-            if event.key == pg.K_DOWN:
-                   self.player.move(dy=1)
-                 
-7
+    def events(self):
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                self.quit()
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_LEFT:
+                        self.player.move(dx=-1)
+                if event.key == pg.K_RIGHT:
+                        self.player.move(dx=1)
+                if event.key == pg.K_UP:
+                        self.player.move(dy=-1)
+                if event.key == pg.K_DOWN:
+                    self.player.move(dy=1)
+
+               
 g = Game()
 while True:
-     g.new()
-     g.run()
+    g.new()
+    g.run()
 
     
 
