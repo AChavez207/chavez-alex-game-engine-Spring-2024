@@ -91,11 +91,11 @@ class Player(pg.sprite.Sprite):
         self.collide_with_walls('y')
 
         self.collide_with_group(self.game.coins, True)
-        if self.game.cooldown.cd < 1:
-            self.cooling = False
-        if not self.cooling:
-            self.collide_with_group(self.game.power_ups, True)
-        self.collide_with_group(self.game.mobs, False)
+        # if self.game.cooldown.cd < 1:
+        #     self.cooling = False
+        # if not self.cooling:
+        #     self.collide_with_group(self.game.power_ups, True)
+        # self.collide_with_group(self.game.mobs, False)
 
 
 

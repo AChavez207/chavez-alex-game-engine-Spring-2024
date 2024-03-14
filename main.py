@@ -32,9 +32,11 @@ class Game:
 
 
     def new(self):
+        # self.cooldown = Timer(self)
         # init all variables
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
+        self.coins = pg.sprite.Group()
         self.power_ups = pg.sprite.Group()
         self.food = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
@@ -91,7 +93,7 @@ class Game:
         self.screen.fill(BGCOLOR)
         self.draw_grid()
         self.all_sprites.draw(self.screen)
-        self.draw_text(self.scrren, "Coins" + str(self.player.moneybag), 24, WHITE, WIDTH/2 -32, 2)
+        self.draw_text(self.screen, "Coins" + str(self.player.moneybag), 24, WHITE, WIDTH/2 -32, 2)
         pg.display.flip()
 
     
@@ -100,15 +102,15 @@ class Game:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 self.quit()
-            if event.type == pg.KEYDOWN:
-                if event.key == pg.K_LEFT:
-                        self.player.move(dx=-1)
-                if event.key == pg.K_RIGHT:
-                        self.player.move(dx=1)
-                if event.key == pg.K_UP:
-                        self.player.move(dy=-1)
-                if event.key == pg.K_DOWN:
-                    self.player.move(dy=1)
+            # if event.type == pg.KEYDOWN:
+            #     if event.key == pg.K_LEFT:
+            #             self.player.move(dx=-1)
+            #     if event.key == pg.K_RIGHT:
+            #             self.player.move(dx=1)
+            #     if event.key == pg.K_UP:
+            #             self.player.move(dy=-1)
+            #     if event.key == pg.K_DOWN:
+            #         self.player.move(dy=1)
 
                
 g = Game()
