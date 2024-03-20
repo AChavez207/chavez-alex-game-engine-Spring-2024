@@ -67,26 +67,6 @@ class Player(pg.sprite.Sprite):
         self.dir = d
     def get_dir(self):
         return dir
-    def get_mouse(self):
-        if pg.mouse.get_rel()[0]:
-            self.weapon_drawn = False
-        if pg.mouse.get_pressed()[0]:
-            if not self.weapon_drawn:
-                self.weapon_drawn = True
-                self.game.sword_sound.play()
-            mx = pg.mouse.get_pos()[0]
-            my = pg.mouse.get_pos()[1]
-            if abs(mx-self.rect.x) > abs(my-self.rect.y):
-                if mx-self.rect.x > 0:
-                    print("swing to pos x")
-                    # self.weapon = Sword(self.rect.)
-                if mx-self.rect.x < 0:
-                    print("swing to neg x")
-            else:
-                if my-self.rect.y > 0:
-                    print("swing to pos y")
-                if my-self.rect.y < 0:
-                    print("swing to neg y")
         
 
         # def move (self, dx=0, dy=0):
@@ -111,6 +91,9 @@ class Player(pg.sprite.Sprite):
             self.vx *= 0.7071
             self.vy *= 0.7071
 
+    previous_position = list(player_position)
+    player_has_moved = previous_position != player_position
+
     def collide_with_walls(self, dir):
         if dir == 'x':
             hits = pg.sprite.spritecollide(self, self.game.walls, False)
@@ -132,7 +115,13 @@ class Player(pg.sprite.Sprite):
                 self.rect.y = self.y
 
 
-
+    def collide_with_powerup(self):
+        collide = pg.sprite.spritecollide(self,self.game.powerup, False)
+        if collide:
+            self.speed +=200
+        if self.speed <=400:
+            print("im fast")
+            self.speed = 500
 
 
     def collide_with_mobs(self):
@@ -164,6 +153,7 @@ class Player(pg.sprite.Sprite):
         self.rect.y = self.y
         self.collide_with_walls('y')
         self.collide_with_mobs()
+        self.collide_with_powerup
 
 
 
@@ -237,7 +227,7 @@ class Mob(pg.sprite.Sprite):
         self.vx, self.vy = 100,100
         self.x = x * TILESIZE
         self.y = y * TILESIZE
-        self.speed = randint(1,10)
+        self.speed = 250
         self.hitpoints = 10
     def collide_with_walls(self, dir):
         if dir == 'x':
@@ -260,13 +250,13 @@ class Mob(pg.sprite.Sprite):
         self.y += self.vy * self.game.dt
         
         if self.rect.x < self.game.player.rect.x:
-            self.vx = 100
+            self.vx = 150
         if self.rect.x > self.game.player.rect.x:
-            self.vx = -100    
+            self.vx = -150    
         if self.rect.y < self.game.player.rect.y:
-            self.vy = 100
+            self.vy = 150
         if self.rect.y > self.game.player.rect.y:
-            self.vy = -100
+            self.vy = -150
         self.rect.x = self.x
         # self.collide_with_walls('x')
         self.rect.y = self.y
@@ -309,13 +299,13 @@ class Mob2(pg.sprite.Sprite):
         self.y += self.vy * self.game.dt
         
         if self.rect.x < self.game.player.rect.x:
-            self.vx = 100
+            self.vx = 150
         if self.rect.x > self.game.player.rect.x:
-            self.vx = -100    
+            self.vx = -150    
         if self.rect.y < self.game.player.rect.y:
-            self.vy = 100
+            self.vy = 150
         if self.rect.y > self.game.player.rect.y:
-            self.vy = -100
+            self.vy = -150
         self.rect.x = self.x
         # self.collide_with_walls('x')
         self.rect.y = self.y

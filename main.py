@@ -8,6 +8,7 @@ import pygame as pg
 import sys
 from settings import *
 from sprites import *
+from utils import *
 from random import randint 
 from os import path
 from time import sleep
@@ -28,6 +29,18 @@ def render_health_bar(surface, position_x, position_y, percentage):
     pg.draw.rect(surface, GREEN, filled_rect)
     pg.draw.rect(surface, WHITE, border_rect, 2)  
 
+def render_speed_bar(surface, position_x, position_y, percentage):
+    percentage = max(PLAYER_SPEED, percentage)  
+    total_length = 32
+    height = 10
+    filled_length = (PLAYER_SPEED / PLAYER_MAX_SPEED) * total_length
+    border_rect = pg.Rect(position_x, position_y, total_length, height)
+    filled_rect = pg.Rect(position_x, position_y, filled_length, height)
+    pg.draw.rect(surface, SPEED_COLOR, filled_rect)
+    pg.draw.rect(surface, WHITE, border_rect, 1)  
+
+previous_position = list(player_position)
+player_has_moved = player_position != previous_position
 #Game Class
 class Game:
     #initializing attributes
@@ -50,6 +63,8 @@ class Game:
     def new(self):
         # self.cooldown = Timer(self)
         # init all variables
+        self.mob_timer = Timer(self)
+        self.mob_timer.cd = 5
         self.player = pg.sprite.Group()
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
@@ -94,6 +109,9 @@ class Game:
 
     def update(self):
         self.all_sprites.update()
+        self.mob_timer.ticking()
+        if self.player.hitpoints <1:
+            self.playing = False
 
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
@@ -109,12 +127,6 @@ class Game:
         text_rect.topleft = (x,y)
         surface.blit(text_surface, text_rect)
 
-    def draw(self):
-        self.screen.fill(BGCOLOR)
-        self.draw_grid()
-        self.all_sprites.draw(self.screen)
-        self.draw_text(self.screen, "Coins" + str(self.player.moneybag), 24, WHITE, WIDTH/2 -32, 2)
-        pg.display.flip()
 
     def collide_with_mobs(self):
         hits = pg.sprite.spritecollide(self,self.game.mobs,False)
@@ -131,6 +143,18 @@ class Game:
             # self.player.draw_health_bar(self.screen, self.player.rect.x, self.player.rect.y, self.player.hitpoints)
             render_health_bar(self.screen, self.player.rect.x, self.player.rect.y+TILESIZE, self.player.hitpoints)
             pg.display.flip()
+            if player_has_moved:
+                self.screen.fill(BGCOLOR)
+             # self.draw_grid()
+                self.all_sprites.draw(self.screen)
+                # self.player.draw_health_bar(self.screen, self.player.rect.x, self.player.rect.y, self.player.hitpoints)
+                render_speed_bar(self.screen, self.player.rect.x, self.player.rect.y-10, self.player.hitpoints)
+                pg.display.flip()
+            self.draw_text(self.screen, str(self.cooldown.current_time), 24, WHITE, WIDTH/2 - 32, 2)
+            self.draw_text(self.screen, str(self.mob_timer.get_countdown()), 24, WHITE, WIDTH/2 - 32, 60)
+            pg.display.flip()
+
+
     # def draw(self):
     #         self.screen.fill(BGCOLOR)
     #         # self.draw_grid()
@@ -154,6 +178,8 @@ class Game:
             #             self.player.move(dy=-1)
             #     if event.key == pg.K_DOWN:
             #         self.player.move(dy=1)
+                
+
             
     def show_start_screen(self):
         self.screen.fill(LIGHTBLUE)
