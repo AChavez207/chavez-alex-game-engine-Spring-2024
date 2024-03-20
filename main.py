@@ -12,16 +12,22 @@ from random import randint
 from os import path
 from time import sleep
 
-def draw_health_bar(surf, x, y, pct):
-    if pct < 0:
-        pct = 0
-    BAR_LENGTH = 32
-    BAR_HEIGHT = 10
-    fill = (pct / 100) * BAR_LENGTH
-    outline_rect = pg.Rect(x, y, BAR_LENGTH, BAR_HEIGHT)
-    fill_rect = pg.Rect(x, y, fill, BAR_HEIGHT)
-    pg.draw.rect(surf, GREEN, fill_rect)
-    pg.draw.rect(surf, WHITE, outline_rect, 2)
+# def mob1_name(self):
+#     total_length = 32
+#     height = 10
+#     self.draw_text(self.screen, "Press any button to begin.", 10)
+
+
+def render_health_bar(surface, position_x, position_y, percentage):
+    percentage = max(0, percentage)  
+    total_length = 32
+    height = 10
+    filled_length = (percentage / 100.0) * total_length
+    border_rect = pg.Rect(position_x, position_y, total_length, height)
+    filled_rect = pg.Rect(position_x, position_y, filled_length, height)
+    pg.draw.rect(surface, GREEN, filled_rect)
+    pg.draw.rect(surface, WHITE, border_rect, 2)  
+
 #Game Class
 class Game:
     #initializing attributes
@@ -44,6 +50,7 @@ class Game:
     def new(self):
         # self.cooldown = Timer(self)
         # init all variables
+        self.player = pg.sprite.Group()
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
         self.coins = pg.sprite.Group()
@@ -64,12 +71,12 @@ class Game:
                     self.player = Player(self, col, row)
                 if tile == 'U':
                     PowerUp(self, col,row)
-                if tile == 'F':
-                    Coin(self, col, row)
                 if tile == 'M':
                     Mob(self, col, row)
                 if tile == 'm':
                     Mob2(self,col,row)
+                if tile == 'n':
+                    Mob3(self,col,row)
 
             
                 
@@ -122,8 +129,16 @@ class Game:
             # self.draw_grid()
             self.all_sprites.draw(self.screen)
             # self.player.draw_health_bar(self.screen, self.player.rect.x, self.player.rect.y, self.player.hitpoints)
-            draw_health_bar(self.screen, self.player.rect.x, self.player.rect.y-8, self.player.hitpoints)
+            render_health_bar(self.screen, self.player.rect.x, self.player.rect.y+TILESIZE, self.player.hitpoints)
             pg.display.flip()
+    # def draw(self):
+    #         self.screen.fill(BGCOLOR)
+    #         # self.draw_grid()
+    #         self.all_sprites.draw(self.screen)
+    #         self.player.draw_mob1_name( self.player.rect.x, self.player.rect.y)
+    #         mob1_name( self.player.rect.x, self.player.rect.y-TILESIZE)
+    #         pg.display.flip()
+    #   #input method
       #input method
     def events(self):
          for event in pg.event.get():
