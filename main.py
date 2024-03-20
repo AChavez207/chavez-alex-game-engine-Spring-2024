@@ -8,17 +8,15 @@ import pygame as pg
 import sys
 from settings import *
 from sprites import *
-from utils import *
 from random import randint 
 from os import path
-from time import sleep
 
 # def mob1_name(self):
 #     total_length = 32
 #     height = 10
 #     self.draw_text(self.screen, "Press any button to begin.", 10)
 
-
+#show health and speed bar
 def render_health_bar(surface, position_x, position_y, percentage):
     percentage = max(0, percentage)  
     total_length = 32
@@ -63,8 +61,8 @@ class Game:
     def new(self):
         # self.cooldown = Timer(self)
         # init all variables
-        self.mob_timer = Timer(self)
-        self.mob_timer.cd = 5
+        # self.mob_timer = Timer(self)
+        # self.mob_timer.cd = 5
         self.player = pg.sprite.Group()
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
@@ -109,9 +107,9 @@ class Game:
 
     def update(self):
         self.all_sprites.update()
-        self.mob_timer.ticking()
-        if self.player.hitpoints <1:
-            self.playing = False
+        # self.mob_timer.ticking()
+        # if self.player.hitpoints <1:
+        #     self.playing = False
 
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
@@ -131,7 +129,7 @@ class Game:
     def collide_with_mobs(self):
         hits = pg.sprite.spritecollide(self,self.game.mobs,False)
         if hits:
-            self.hitpoints -=1
+            self.hitpoints -=5
         if self.hitpoints <= 0:
             print("player has died")
             self.kill()
@@ -143,6 +141,8 @@ class Game:
             # self.player.draw_health_bar(self.screen, self.player.rect.x, self.player.rect.y, self.player.hitpoints)
             render_health_bar(self.screen, self.player.rect.x, self.player.rect.y+TILESIZE, self.player.hitpoints)
             pg.display.flip()
+
+            
             if player_has_moved:
                 self.screen.fill(BGCOLOR)
              # self.draw_grid()
@@ -150,20 +150,11 @@ class Game:
                 # self.player.draw_health_bar(self.screen, self.player.rect.x, self.player.rect.y, self.player.hitpoints)
                 render_speed_bar(self.screen, self.player.rect.x, self.player.rect.y-10, self.player.hitpoints)
                 pg.display.flip()
-            self.draw_text(self.screen, str(self.cooldown.current_time), 24, WHITE, WIDTH/2 - 32, 2)
-            self.draw_text(self.screen, str(self.mob_timer.get_countdown()), 24, WHITE, WIDTH/2 - 32, 60)
-            pg.display.flip()
+            # self.draw_text(self.screen, str(self.cooldown.current_time), 24, WHITE, WIDTH/2 - 32, 2)
+            # self.draw_text(self.screen, str(self.mob_timer.get_countdown()), 24, WHITE, WIDTH/2 - 32, 60)
+            # pg.display.flip()
 
 
-    # def draw(self):
-    #         self.screen.fill(BGCOLOR)
-    #         # self.draw_grid()
-    #         self.all_sprites.draw(self.screen)
-    #         self.player.draw_mob1_name( self.player.rect.x, self.player.rect.y)
-    #         mob1_name( self.player.rect.x, self.player.rect.y-TILESIZE)
-    #         pg.display.flip()
-    #   #input method
-      #input method
     def events(self):
          for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -180,7 +171,7 @@ class Game:
             #         self.player.move(dy=1)
                 
 
-            
+    #Start screen      
     def show_start_screen(self):
         self.screen.fill(LIGHTBLUE)
         self.draw_text(self.screen, "Press any button to begin.", 27, WHITE, WIDTH/2, HEIGHT/2)

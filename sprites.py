@@ -57,6 +57,7 @@ class Player(pg.sprite.Sprite):
         self.y = y * TILESIZE
         self.moneybag = 0
         self.speed = 300
+        # self.max_speed = 500
         self.hitpoints = 100
         self.weapon_drawn = False
         self.pos = vec(0,0)
@@ -86,7 +87,7 @@ class Player(pg.sprite.Sprite):
         if keys[pg.K_DOWN] or keys[pg.K_s]:
             self.vy = self.speed
         if keys[pg.K_e]:
-            self.weapon_drawn = True
+            pg.quit()
         if self.vx != 0 and self.vy != 0:
             self.vx *= 0.7071
             self.vy *= 0.7071
@@ -116,21 +117,22 @@ class Player(pg.sprite.Sprite):
 
 
     def collide_with_powerup(self):
-        collide = pg.sprite.spritecollide(self,self.game.powerup, False)
-        if collide:
-            self.speed +=200
-        if self.speed <=400:
-            print("im fast")
-            self.speed = 500
+        hits = pg.sprite.spritecollide(self,self.game.power_ups,False)
+        if hits:
+            self.speed +=50
+
 
 
     def collide_with_mobs(self):
         hits = pg.sprite.spritecollide(self,self.game.mobs,False)
         if hits:
-            self.hitpoints -=1
+            self.hitpoints -=5
         if self.hitpoints <= 0:
             print("player has died")
             self.kill()
+            pg.quit()
+        if self.hitpoints >= 300:
+            self.speed = 300
 
     # def collide_with_group(self, group, kill):
     #     hits = pg.sprite.spritecollide(self, group, kill)
@@ -153,7 +155,7 @@ class Player(pg.sprite.Sprite):
         self.rect.y = self.y
         self.collide_with_walls('y')
         self.collide_with_mobs()
-        self.collide_with_powerup
+        self.collide_with_powerup()
 
 
 
@@ -190,29 +192,7 @@ class PowerUp(pg.sprite.Sprite):
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
 
-    # def collide_with_player(self):
-    #     hits = pg.sprite.spritecollide(self,self.game.player,False)
-    #     if hits:
-    #         self.hitpoints -=1
-    #     if self.hitpoints <= 0:
-    #         print("Finished level")
-    #         self.kill()
-    # def collide_with_player(self):
-    #     hits = pg.sprite.spritecollide(self,self.game.player,False)
-    #     if hits:
-    #         PowerUp.hitpoint -=1
-    #     if PowerUp.Hitpoints <=0:
-    #         PLAYER_SPEED = 500
-    #         print("Im fast")
 
-
-    # def collide_with_powerup(self):
-    #     hits = pg.sprite.spritecollide(self,self.game.power_ups,False)
-    #     if hits:
-    #         PowerUp.hitpoints -=1
-    #     if PowerUp.hitpoints <=0:
-    #         PLAYER_SPEED = 500
-    #         print("Im fast")
 
 class Mob(pg.sprite.Sprite):
     def __init__(self, game, x, y):
