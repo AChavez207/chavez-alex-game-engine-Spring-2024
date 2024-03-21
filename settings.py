@@ -1,7 +1,7 @@
 #This file was created by: Alex Chavez
 TITLE = "GAME"
 
-FPS = 30
+FPS = 120
 
 PLAYER_SPEED = 300
 player_has_moved = False

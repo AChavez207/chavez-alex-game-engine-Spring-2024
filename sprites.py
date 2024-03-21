@@ -55,7 +55,6 @@ class Player(pg.sprite.Sprite):
         self.vx, self.vy = 0, 0
         self.x = x * TILESIZE
         self.y = y * TILESIZE
-        self.moneybag = 0
         self.speed = 300
         # self.max_speed = 500
         self.hitpoints = 100
@@ -119,20 +118,19 @@ class Player(pg.sprite.Sprite):
     def collide_with_powerup(self):
         hits = pg.sprite.spritecollide(self,self.game.power_ups,False)
         if hits:
-            self.speed +=50
+            self.speed +=5
 
 
 
     def collide_with_mobs(self):
         hits = pg.sprite.spritecollide(self,self.game.mobs,False)
         if hits:
-            self.hitpoints -=5
+            self.hitpoints -=1
         if self.hitpoints <= 0:
             print("player has died")
             self.kill()
             pg.quit()
-        if self.hitpoints >= 300:
-            self.speed = 300
+
 
     # def collide_with_group(self, group, kill):
     #     hits = pg.sprite.spritecollide(self, group, kill)
@@ -179,7 +177,6 @@ class Wall(pg.sprite.Sprite):
  
 class PowerUp(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        # add powerup groups later....
         self.groups = game.all_sprites, game.power_ups
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game

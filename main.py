@@ -129,7 +129,7 @@ class Game:
     def collide_with_mobs(self):
         hits = pg.sprite.spritecollide(self,self.game.mobs,False)
         if hits:
-            self.hitpoints -=5
+            self.hitpoints -=2
         if self.hitpoints <= 0:
             print("player has died")
             self.kill()
@@ -142,7 +142,7 @@ class Game:
             render_health_bar(self.screen, self.player.rect.x, self.player.rect.y+TILESIZE, self.player.hitpoints)
             pg.display.flip()
 
-            
+
             if player_has_moved:
                 self.screen.fill(BGCOLOR)
              # self.draw_grid()
