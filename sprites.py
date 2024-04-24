@@ -6,22 +6,29 @@ from pygame.sprite import Sprite
 from settings import *
 from random import choice
 from random import randint
+from os import path
 
 vec =pg.math.Vector2
-# def collide_with_player(self):
-#         hits = pg.sprite.spritecollide(self,self.game.player,False)
-#         if hits:
-#             self.hitpoints -=1
-#         if self.hitpoints <= 0:
-#             print("Finished level")
-#             self.kill()
-# def collide_with_player(self):
-#         hits = pg.sprite.spritecollide(self,self.game.player,False)
-#         if hits:
-#             PowerUp.hitpoint -=1
-#         if PowerUp.Hitpoints <=0:
-#             PLAYER_SPEED = 500
-#             print("Im fast")
+SPRITEPAPER = "SPIDER.png"
+SPRITESHEET = "theBell.png"
+
+game_folder = path.dirname(__file__)
+img_folder = path.join(game_folder, 'images')
+
+
+class Spritesheet:
+    # utility class for loading and parsing spritesheets
+    def __init__(self, filename):
+        self.spritesheet = pg.image.load(filename).convert()
+
+    def get_image(self, x, y, width, height):
+        # grab an image out of a larger spritesheet
+        image = pg.Surface((width, height))
+        image.blit(self.spritesheet, (0, 0), (x, y, width, height))
+        # image = pg.transform.scale(image, (width, height))
+        image = pg.transform.scale(image, (width * 1.5, height * 1.5))
+        return image
+    
 def collide_with_walls(sprite, group, dir):
     if dir == 'x':
         hits = pg.sprite.spritecollide(sprite, group, False)
@@ -50,17 +57,23 @@ class Player(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(YELLOW)
+        self.spritesheet = Spritesheet(path.join(img_folder, SPRITESHEET))
+        self.load_images()
+        self.image = self.standing_frames[0]
         self.rect = self.image.get_rect()
         self.vx, self.vy = 0, 0
         self.x = x * TILESIZE
         self.y = y * TILESIZE
         self.speed = 300
         # self.max_speed = 500
-        self.hitpoints = 100
+        self.hitpoints = 200
         self.weapon_drawn = False
         self.pos = vec(0,0)
         self.dir = vec(0,0)
+        self.current_frame = 0
+        self.last_update = 0
+        self.jumping = False
+        self.walking = False
         self.material = True
         self.weapon = ""
     def set_dir(self,d):
@@ -118,7 +131,7 @@ class Player(pg.sprite.Sprite):
     def collide_with_powerup(self):
         hits = pg.sprite.spritecollide(self,self.game.power_ups,False)
         if hits:
-            self.speed +=5
+            self.speed +=2.5
 
 
 
@@ -144,7 +157,21 @@ class Player(pg.sprite.Sprite):
     #             self.speed += 200
     #         if str(hits[0].__class__.__name__) == "Mob":
     #             self.hitpoints -= 1
+    def load_images(self):
+        self.standing_frames = [self.spritesheet.get_image(0,0, 32, 32), 
+                                self.spritesheet.get_image(32,0, 32, 32)]
+
+    def animate(self):
+        now = pg.time.get_ticks()
+        if now - self.last_update > 350:
+            self.last_update = now
+            self.current_frame = (self.current_frame + 1) % len(self.standing_frames)
+            bottom = self.rect.bottom
+            self.image = self.standing_frames[self.current_frame]
+            self.rect = self.image.get_rect()
+            self.rect.bottom = bottom
     def update(self):
+        self.animate()
         self.get_keys()
         self.x += self.vx * self.game.dt
         self.y += self.vy * self.game.dt
@@ -183,7 +210,7 @@ class PowerUp(pg.sprite.Sprite):
         self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image.fill(RED)
         self.rect = self.image.get_rect()
-        self.hitpoints = 100
+        self.hitpoints = 1
         self.x = x
         self.y = y
         self.rect.x = x * TILESIZE
@@ -197,7 +224,9 @@ class Mob(pg.sprite.Sprite):
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(LIGHTGREY)
+        # self.spritepaper = Spritesheet(path.join(img_folder, SPRITEPAPER))
+        # self.load_images()
+        # self.image = self.standing_frames[0]
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
@@ -238,6 +267,7 @@ class Mob(pg.sprite.Sprite):
         # self.collide_with_walls('x')
         self.rect.y = self.y
         # self.collide_with_walls('y')
+
 
 class Mob2(pg.sprite.Sprite):
     def __init__(self, game, x, y):

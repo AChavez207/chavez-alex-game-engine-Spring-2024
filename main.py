@@ -3,13 +3,15 @@
 # import necessary modules
 
 # Player Levels, Weapons, Gain currency from enemies
-
+#Beta Goal : Add timer and leaderboard
 import pygame as pg
 import sys
 from settings import *
 from sprites import *
+from utils import *
 from random import randint 
 from os import path
+import sys
 
 # def mob1_name(self):
 #     total_length = 32
@@ -19,9 +21,9 @@ from os import path
 #show health and speed bar
 def render_health_bar(surface, position_x, position_y, percentage):
     percentage = max(0, percentage)  
-    total_length = 32
-    height = 10
-    filled_length = (percentage / 100.0) * total_length
+    total_length = 32 * 1.5
+    height = 10 * 1.5
+    filled_length = (percentage / 200.0) * total_length
     border_rect = pg.Rect(position_x, position_y, total_length, height)
     filled_rect = pg.Rect(position_x, position_y, filled_length, height)
     pg.draw.rect(surface, GREEN, filled_rect)
@@ -63,6 +65,10 @@ class Game:
         # init all variables
         # self.mob_timer = Timer(self)
         # self.mob_timer.cd = 5
+        self.countdown_time = 35
+        self.cooldown = Timer(self)
+        self.mob_timer = Timer(self)
+        self.mob_timer.cd = 5
         self.player = pg.sprite.Group()
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
@@ -107,6 +113,15 @@ class Game:
 
     def update(self):
         self.all_sprites.update()
+        self.cooldown.ticking()
+        self.mob_timer.ticking()
+
+        if self.player.hitpoints < 1:
+            self.playing = False
+        if self.mob_timer.cd < 1:
+            Mob(self,randint(1,25), randint(1,25))
+            self.mob_timer.cd = 2
+
         # self.mob_timer.ticking()
         # if self.player.hitpoints <1:
         #     self.playing = False
@@ -135,11 +150,12 @@ class Game:
             self.kill()
     
     def draw(self):
+            pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
             self.screen.fill(BGCOLOR)
             # self.draw_grid()
             self.all_sprites.draw(self.screen)
             # self.player.draw_health_bar(self.screen, self.player.rect.x, self.player.rect.y, self.player.hitpoints)
-            render_health_bar(self.screen, self.player.rect.x, self.player.rect.y+TILESIZE, self.player.hitpoints)
+            render_health_bar(self.screen, self.player.rect.x, self.player.rect.y+TILESIZE *1.5, self.player.hitpoints)
             pg.display.flip()
 
 
@@ -153,6 +169,13 @@ class Game:
             # self.draw_text(self.screen, str(self.cooldown.current_time), 24, WHITE, WIDTH/2 - 32, 2)
             # self.draw_text(self.screen, str(self.mob_timer.get_countdown()), 24, WHITE, WIDTH/2 - 32, 60)
             # pg.display.flip()
+            self.draw_text(self.screen, str(self.cooldown.current_time), 24, WHITE, WIDTH/2 - 32, 2)
+            self.draw_text(self.screen, str(self.mob_timer.get_countdown()), 24, WHITE, WIDTH/2 - 32, 32)
+            self.draw_text(self.screen, str(self.dt), 24, WHITE, WIDTH/2 - 32, 54)
+            self.draw_text(self.screen, str(self.cooldown.get_countdown()), 24, WHITE, WIDTH/2 - 32, 128)
+            # self.draw_text(self.screen, str(self.player.points), 24, RED, WIDTH/4 - 32, 128)
+            self.draw_text(self.screen, "New line...", 24, RED, WIDTH/4 - 32, 256)
+
 
 
     def events(self):

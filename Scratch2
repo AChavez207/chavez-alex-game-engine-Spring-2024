@@ -1,0 +1,18 @@
+#This file was created by : Alex Chavez
+
+# write a functions that takes two argumets and multiplies them
+#use return statement
+#print is
+
+def mult(x,y):
+    return x*y
+
+def printer(T):
+    str(T) + ""
+
+print(mult(10,10))
+
+
+
+
+#write another function that converts the return from the first string 
