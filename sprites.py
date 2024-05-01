@@ -141,7 +141,7 @@ class Player(pg.sprite.Sprite):
     def collide_with_powerup2(self):
         hits = pg.sprite.spritecollide(self,self.game.power_up2,False)
         if hits:
-            self.speed += 10
+            self.speed += 2
 
     def collide_with_mobs(self):
         hits = pg.sprite.spritecollide(self,self.game.mobs,False)
@@ -189,6 +189,7 @@ class Player(pg.sprite.Sprite):
         self.collide_with_walls('y')
         self.collide_with_mobs()
         self.collide_with_powerup()
+        self.collide_with_powerup2()
 
 
 
@@ -222,18 +223,13 @@ class PowerUp(pg.sprite.Sprite):
         self.y = y
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
-        def collide_with_group(self, group, kill):
-            hits = pg.sprite.spritecollide(self, group, kill)
-            if hits:
-                if str(hits[0].__class__.__name__) == "PowerUp":
-                    print("you collected power up")
-                    hits[0].hitpoints -= 1
+
 
         
 
 class PowerUp2(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        self.groups = game.all_sprites, game.power_ups
+        self.groups = game.all_sprites, game.power_up2
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
