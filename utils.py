@@ -2,9 +2,6 @@ import pygame as pg
 
 from math import floor
 
-def test_func():
-    print("Test func ran...")
-
 def collide_hit_rect(one, two):
     return one.hit_rect.colliderect(two.rect)
 

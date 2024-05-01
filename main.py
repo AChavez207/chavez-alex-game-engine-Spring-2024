@@ -12,18 +12,28 @@ from utils import *
 from random import randint 
 from os import path
 import sys
+import time
+
+
+LEVEL1 = "map.txt"
+LEVEL2 = "map2.txt"
+LEVEL3 = "map3.txt"
+LEVEL4 = "map4.txt"
+
 
 # def mob1_name(self):
 #     total_length = 32
 #     height = 10
 #     self.draw_text(self.screen, "Press any button to begin.", 10)
 
+screen = pg.display.set_mode((WIDTH, HEIGHT))
+
 #show health and speed bar
 def render_health_bar(surface, position_x, position_y, percentage):
     percentage = max(0, percentage)  
     total_length = 32 * 1.5
     height = 10 * 1.5
-    filled_length = (percentage / 200.0) * total_length
+    filled_length = (percentage / 1000.0) * total_length
     border_rect = pg.Rect(position_x, position_y, total_length, height)
     filled_rect = pg.Rect(position_x, position_y, filled_length, height)
     pg.draw.rect(surface, GREEN, filled_rect)
@@ -44,6 +54,8 @@ player_has_moved = player_position != previous_position
 #Game Class
 class Game:
     #initializing attributes
+    start_time = None
+    blackout_duration = 5
     def __init__(self):
         pg.init()
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -61,14 +73,8 @@ class Game:
 
 
     def new(self):
-        # self.cooldown = Timer(self)
-        # init all variables
-        # self.mob_timer = Timer(self)
-        # self.mob_timer.cd = 5
-        self.countdown_time = 35
+        self.load_data()
         self.cooldown = Timer(self)
-        self.mob_timer = Timer(self)
-        self.mob_timer.cd = 5
         self.player = pg.sprite.Group()
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
@@ -76,10 +82,13 @@ class Game:
         self.power_ups = pg.sprite.Group()
         self.food = pg.sprite.Group()
         self.mobs = pg.sprite.Group()
+        self.power_up2 = pg.sprite.Group()
         # self.player = Player(self,10,10)
         # for x in range(10,20):
         #  Wall(self,x,5)
         #defined run method
+
+                
         for row, tiles in enumerate(self.map_data):
             print(row)
             for col, tile in enumerate(tiles):
@@ -96,8 +105,8 @@ class Game:
                     Mob2(self,col,row)
                 if tile == 'n':
                     Mob3(self,col,row)
-
-            
+                if tile == 's':
+                        PowerUp2(self,col,row)            
                 
 
     def run(self):
@@ -114,13 +123,9 @@ class Game:
     def update(self):
         self.all_sprites.update()
         self.cooldown.ticking()
-        self.mob_timer.ticking()
 
         if self.player.hitpoints < 1:
             self.playing = False
-        if self.mob_timer.cd < 1:
-            Mob(self,randint(1,25), randint(1,25))
-            self.mob_timer.cd = 2
 
         # self.mob_timer.ticking()
         # if self.player.hitpoints <1:
@@ -159,23 +164,22 @@ class Game:
             pg.display.flip()
 
 
-            if player_has_moved:
-                self.screen.fill(BGCOLOR)
-             # self.draw_grid()
-                self.all_sprites.draw(self.screen)
-                # self.player.draw_health_bar(self.screen, self.player.rect.x, self.player.rect.y, self.player.hitpoints)
-                render_speed_bar(self.screen, self.player.rect.x, self.player.rect.y-10, self.player.hitpoints)
-                pg.display.flip()
-            # self.draw_text(self.screen, str(self.cooldown.current_time), 24, WHITE, WIDTH/2 - 32, 2)
-            # self.draw_text(self.screen, str(self.mob_timer.get_countdown()), 24, WHITE, WIDTH/2 - 32, 60)
-            # pg.display.flip()
-            self.draw_text(self.screen, str(self.cooldown.current_time), 24, WHITE, WIDTH/2 - 32, 2)
-            self.draw_text(self.screen, str(self.mob_timer.get_countdown()), 24, WHITE, WIDTH/2 - 32, 32)
-            self.draw_text(self.screen, str(self.dt), 24, WHITE, WIDTH/2 - 32, 54)
-            self.draw_text(self.screen, str(self.cooldown.get_countdown()), 24, WHITE, WIDTH/2 - 32, 128)
-            # self.draw_text(self.screen, str(self.player.points), 24, RED, WIDTH/4 - 32, 128)
-            self.draw_text(self.screen, "New line...", 24, RED, WIDTH/4 - 32, 256)
+            self.all_sprites.draw(self.screen)
+            self.draw_text(self.screen, str(self.cooldown.current_time), 24, GREEN, WIDTH/2 - 32, 2)
+            pg.display.flip()
 
+
+    # # if start_time is not None and time.time() - start_time < blackout_duration:
+    # #     screen.fill(BLACK)
+    # #     draw_text(screen, "Screen blackout!", 36, WHITE, WIDTH, HEIGHT,100)
+    # #     pg.display.flip()
+    # # else:
+    # #     # Otherwise, fill the screen with white color
+    # #     screen.fill(WHITE)
+    # #     # Display a message
+    # #     draw_text(screen, "Game continues...", 36, BLACK, WIDTH, HEIGHT,100)
+    # #     pg.display.flip()
+    # #     start_time = None  # Reset start time after the blackout duration is over
 
 
     def events(self):

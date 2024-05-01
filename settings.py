@@ -5,7 +5,6 @@ FPS = 120
 
 PLAYER_SPEED = 300
 player_has_moved = False
-
 #32 grids wide
 WIDTH = 1024
 #24 grids high

@@ -65,6 +65,7 @@ class Player(pg.sprite.Sprite):
         self.x = x * TILESIZE
         self.y = y * TILESIZE
         self.speed = 300
+        self.moneybag = 0
         # self.max_speed = 500
         self.hitpoints = 200
         self.weapon_drawn = False
@@ -90,6 +91,8 @@ class Player(pg.sprite.Sprite):
         self.vx, self.vy = 0, 0 
         self.weapon_drawn = False
         keys = pg.key.get_pressed()
+        if keys[pg.K_1]:
+            self.game.change_level("level3.txt")
         if keys[pg.K_LEFT] or keys[pg.K_a]:
             self.vx = -self.speed
         if keys[pg.K_RIGHT] or keys[pg.K_d]:
@@ -100,6 +103,8 @@ class Player(pg.sprite.Sprite):
             self.vy = self.speed
         if keys[pg.K_e]:
             pg.quit()
+
+            
         if self.vx != 0 and self.vy != 0:
             self.vx *= 0.7071
             self.vy *= 0.7071
@@ -131,14 +136,17 @@ class Player(pg.sprite.Sprite):
     def collide_with_powerup(self):
         hits = pg.sprite.spritecollide(self,self.game.power_ups,False)
         if hits:
-            self.speed +=2.5
+            self.hitpoints += 5
 
-
+    def collide_with_powerup2(self):
+        hits = pg.sprite.spritecollide(self,self.game.power_up2,False)
+        if hits:
+            self.speed += 10
 
     def collide_with_mobs(self):
         hits = pg.sprite.spritecollide(self,self.game.mobs,False)
         if hits:
-            self.hitpoints -=1
+            self.hitpoints -= 5
         if self.hitpoints <= 0:
             print("player has died")
             self.kill()
@@ -187,7 +195,6 @@ class Player(pg.sprite.Sprite):
 
 
 
-
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.walls
@@ -209,6 +216,28 @@ class PowerUp(pg.sprite.Sprite):
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
         self.image.fill(RED)
+        self.rect = self.image.get_rect()
+        self.hitpoints = 1
+        self.x = x
+        self.y = y
+        self.rect.x = x * TILESIZE
+        self.rect.y = y * TILESIZE
+        def collide_with_group(self, group, kill):
+            hits = pg.sprite.spritecollide(self, group, kill)
+            if hits:
+                if str(hits[0].__class__.__name__) == "PowerUp":
+                    print("you collected power up")
+                    hits[0].hitpoints -= 1
+
+        
+
+class PowerUp2(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.power_ups
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image.fill(GREEN)
         self.rect = self.image.get_rect()
         self.hitpoints = 1
         self.x = x
