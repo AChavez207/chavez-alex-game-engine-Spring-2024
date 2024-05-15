@@ -39,21 +39,19 @@ def render_health_bar(surface, position_x, position_y, percentage):
     pg.draw.rect(surface, GREEN, filled_rect)
     pg.draw.rect(surface, WHITE, border_rect, 2)  
 
-def render_speed_bar(surface, position_x, position_y, percentage):
-    percentage = max(PLAYER_SPEED, percentage)  
-    total_length = 32
-    height = 10
-    filled_length = (PLAYER_SPEED / PLAYER_MAX_SPEED) * total_length
-    border_rect = pg.Rect(position_x, position_y, total_length, height)
-    filled_rect = pg.Rect(position_x, position_y, filled_length, height)
-    pg.draw.rect(surface, SPEED_COLOR, filled_rect)
-    pg.draw.rect(surface, WHITE, border_rect, 1)  
-
 previous_position = list(player_position)
 player_has_moved = player_position != previous_position
 #Game Class
 class Game:
     #initializing attributes
+    def change_level(self, lvl):
+        # kill all existing sprites first to save memory
+        for s in self.all_sprites:
+            s.kill()
+        with open(path.join(self.game_folder, lvl), 'rt') as f:
+            for line in f:
+                print(line)
+                self.map_data.append(line)
     start_time = None
     blackout_duration = 5
     def __init__(self):
@@ -74,7 +72,8 @@ class Game:
 
     def new(self):
         self.load_data()
-        self.cooldown = Timer(self)
+        self.countown_time = 35
+        # self.cooldown = Timer(self)
         self.player = pg.sprite.Group()
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
@@ -106,7 +105,9 @@ class Game:
                 if tile == 'n':
                     Mob3(self,col,row)
                 if tile == 's':
-                        PowerUp2(self,col,row)            
+                        PowerUp2(self,col,row)  
+                if tile == 'c':
+                    Coin(self,col,row)          
                 
 
     def run(self):
@@ -119,13 +120,16 @@ class Game:
     def quit(self):
         pg.quit
         sys.exit
-
+    
     def update(self):
         self.all_sprites.update()
-        self.cooldown.ticking()
+        # self.cooldown.ticking()
 
-        if self.player.hitpoints < 1:
-            self.playing = False
+        # if self.player.hitpoints < 1:
+
+
+        if self.player.moneybag > 5:
+            self.show_end_screen
 
         # self.mob_timer.ticking()
         # if self.player.hitpoints <1:
@@ -152,7 +156,7 @@ class Game:
             self.hitpoints -=2
         if self.hitpoints <= 0:
             print("player has died")
-            self.kill()
+            pg.quit()
     
     def draw(self):
             pg.display.set_caption("{:.2f}".format(self.clock.get_fps()))
@@ -162,25 +166,6 @@ class Game:
             # self.player.draw_health_bar(self.screen, self.player.rect.x, self.player.rect.y, self.player.hitpoints)
             render_health_bar(self.screen, self.player.rect.x, self.player.rect.y+TILESIZE *1.5, self.player.hitpoints)
             pg.display.flip()
-
-
-            self.all_sprites.draw(self.screen)
-            self.draw_text(self.screen, str(self.cooldown.current_time), 24, GREEN, WIDTH/2 - 32, 2)
-            pg.display.flip()
-
-
-    # # if start_time is not None and time.time() - start_time < blackout_duration:
-    # #     screen.fill(BLACK)
-    # #     draw_text(screen, "Screen blackout!", 36, WHITE, WIDTH, HEIGHT,100)
-    # #     pg.display.flip()
-    # # else:
-    # #     # Otherwise, fill the screen with white color
-    # #     screen.fill(WHITE)
-    # #     # Display a message
-    # #     draw_text(screen, "Game continues...", 36, BLACK, WIDTH, HEIGHT,100)
-    # #     pg.display.flip()
-    # #     start_time = None  # Reset start time after the blackout duration is over
-
 
     def events(self):
          for event in pg.event.get():
@@ -204,7 +189,6 @@ class Game:
         self.draw_text(self.screen, "Press any button to begin.", 27, WHITE, WIDTH/2, HEIGHT/2)
         pg.display.flip()
         self.wait_for_key()
-
 
     def wait_for_key(self):
         waiting = True

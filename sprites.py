@@ -76,6 +76,7 @@ class Player(pg.sprite.Sprite):
         self.jumping = False
         self.walking = False
         self.material = True
+        self.no_collision = True
         self.weapon = ""
     def set_dir(self,d):
         self.dir = d
@@ -101,6 +102,11 @@ class Player(pg.sprite.Sprite):
             self.vy = -self.speed  
         if keys[pg.K_DOWN] or keys[pg.K_s]:
             self.vy = self.speed
+        if keys[pg.K_z]:
+            self.no_collision = False
+            print("Incvincible")
+        else:
+            self.no_collision = True
         if keys[pg.K_e]:
             pg.quit()
 
@@ -132,6 +138,11 @@ class Player(pg.sprite.Sprite):
                 self.vy = 0
                 self.rect.y = self.y
 
+    def show_death_screen(self):
+        self.screen.fill(BLACK)
+        self.draw_text(self.screen, "You Died :(", 27, WHITE, WIDTH*2, HEIGHT*2)
+        pg.display.flip()
+        self.wait_for_key()
 
     def collide_with_powerup(self):
         hits = pg.sprite.spritecollide(self,self.game.power_ups,False)
@@ -142,6 +153,10 @@ class Player(pg.sprite.Sprite):
         hits = pg.sprite.spritecollide(self,self.game.power_up2,False)
         if hits:
             self.speed += 2
+    def collide_with_coin(self):
+        hits = pg.sprite.spritecollide(self,self.game.coin,False)
+        if hits:
+            self.moneybag += 1
 
     def collide_with_mobs(self):
         hits = pg.sprite.spritecollide(self,self.game.mobs,False)
@@ -149,8 +164,8 @@ class Player(pg.sprite.Sprite):
             self.hitpoints -= 5
         if self.hitpoints <= 0:
             print("player has died")
-            self.kill()
             pg.quit()
+
 
 
     # def collide_with_group(self, group, kill):
@@ -190,6 +205,10 @@ class Player(pg.sprite.Sprite):
         self.collide_with_mobs()
         self.collide_with_powerup()
         self.collide_with_powerup2()
+
+        if self.no_collision == False:
+            self.hitpoints = 100
+
 
 
 
@@ -241,7 +260,18 @@ class PowerUp2(pg.sprite.Sprite):
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
 
-
+class Coin(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.coins
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image.fill(YELLOW)
+        self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
+        self.rect.x = x * TILESIZE
+        self.rect.y = y * TILESIZE
 
 class Mob(pg.sprite.Sprite):
     def __init__(self, game, x, y):

@@ -39,27 +39,20 @@ def collide_with_walls(sprite, group, dir):
 
 
 
-class Timer():
-    # sets all properties to zero when instantiated...
-    def __init__(self, game):
-        self.game = game
-        self.current_time = 0
-        self.event_time = 0
-        self.cd = 0
-        # ticking ensures the timer is counting...
-    # must use ticking to count up or down
-    def ticking(self):
-        self.current_time = floor((pg.time.get_ticks())/1000)
-        if self.cd > 0:
-            self.countdown()
-    # resets event time to zero - cooldown reset
-    def get_countdown(self):
-        return floor(self.cd)
-    def countdown(self):
-        if self.cd > 0:
-            self.cd = self.cd - self.game.dt
-    # def event_reset(self):
-    #     self.event_time = floor((self.game.clock.)/1000)
-    # sets current time
-    def get_current_time(self):
-        self.current_time = floor((pg.time.get_ticks())/1000)
+class Timer:
+    def __init__(self):
+        pg.init()
+        self.clock = pg.time.Clock()
+        self.screen_width = 1024
+        self.screen_height = 728
+        self.screen = pg.display.set_mode((self.screen_width, self.screen_height))
+        self.font_name = pg.font.match_font('arial')
+        self.font_size = 24
+        self.font_color = (255, 255, 255)  # white color
+
+    def draw_text(self, surface, text, size, color, x, y):
+        font = pg.font.Font(self.font_name, size)
+        text_surface = font.render(text, True, color)
+        text_rect = text_surface.get_rect()
+        text_rect.topleft = (x, y)
+        surface.blit(text_surface, text_rect)
